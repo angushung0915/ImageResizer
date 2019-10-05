@@ -42,31 +42,29 @@ namespace ImageResizer
             var taskList = new List<Task>();
             foreach (var filePath in allFiles)
             {
-                Image imgPhoto = Image.FromFile(filePath);
-                string imgName = Path.GetFileNameWithoutExtension(filePath);
-
-                int sourceWidth = imgPhoto.Width;
-                int sourceHeight = imgPhoto.Height;
-
-                int destionatonWidth = (int)(sourceWidth * scale);
-                int destionatonHeight = (int)(sourceHeight * scale);
-
                 var taskItem = Task.Run(
-                   () =>  ResizeProcessor(destPath, imgPhoto, imgName, sourceWidth, sourceHeight, destionatonWidth, destionatonHeight));
+                   () =>  {
+                       var imgPhoto = Image.FromFile(filePath);
+                       var imgName = Path.GetFileNameWithoutExtension(filePath);
+
+                       var sourceWidth = imgPhoto.Width;
+                       int sourceHeight = imgPhoto.Height;
+                       var destionatonWidth = (int)(sourceWidth * scale);
+                       var destionatonHeight = (int)(sourceHeight * scale);
+
+                       var processedImage = processBitmap((Bitmap)imgPhoto,
+                                          sourceWidth, sourceHeight,
+                                          destionatonWidth, destionatonHeight);
+
+                       var destFile = Path.Combine(destPath, imgName + ".jpg");
+                       processedImage.Save(destFile, ImageFormat.Jpeg);
+                   });
                 taskList.Add(taskItem);
             }
             await Task.WhenAll(taskList);
         }
 
-        private async void ResizeProcessor(string destPath, Image imgPhoto, string imgName, int sourceWidth, int sourceHeight, int destionatonWidth, int destionatonHeight)
-        {
-            var processedImage = await Task.Run(() => processBitmap((Bitmap)imgPhoto,
-                               sourceWidth, sourceHeight,
-                               destionatonWidth, destionatonHeight));
-
-            var destFile = Path.Combine(destPath, imgName + ".jpg");
-            processedImage.Save(destFile, ImageFormat.Jpeg);
-        }
+        
 
         /// <summary>
         /// 找出指定目錄下的圖片
