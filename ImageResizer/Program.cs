@@ -23,7 +23,7 @@ namespace ImageResizer
             imageProcess.ResizeImages(sourcePath, destinationPath, 2.0);
             sw.Stop();
 
-            Console.WriteLine($"花費時間: {sw.ElapsedMilliseconds} ms");
+            Console.WriteLine($"123花費時間: {sw.ElapsedMilliseconds} ms");
         }
     }
 }
